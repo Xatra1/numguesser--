@@ -8,8 +8,7 @@ using namespace std;
 
 // Variables
 
-int num, diff, num_ans, num_range_min, num_range_max, attempts,
-    attempts_taken = 1;
+int num, diff, num_ans, num_range_min, num_range_max, attempts, attempts_taken;
 char ans;
 string diffStr, fname;
 
@@ -98,6 +97,8 @@ void game() {
          << ". (Attempts left: " << attempts << ")\n Answer: ";
     cin >> num_ans;
     if (num_ans == num) {
+      attempts--;
+      attempts_taken++;
       cout << "\e[33;1;37mCorrect!\nAttempts taken: " << attempts_taken
            << "\n\a\e[0m";
       fileAsk();
