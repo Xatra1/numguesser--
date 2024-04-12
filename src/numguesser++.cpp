@@ -1,43 +1,63 @@
 // Header inclusions
 #include <cstdlib> //rand()
-#include <ctime>   //time()
+#include <cstring> //strcmp()
 #include <fstream> //File operations
 #include <iostream>
-#include <string> //String type
+#include <string>   //String type
+#include <unistd.h> //getlogin()
 using namespace std;
 
 // Variables
 
-int num, diff, num_ans, num_range_min, num_range_max, attempts, attempts_taken;
-char ans;
+int randInt, num, diff, num_ans, num_range_min, num_range_max, attempts,
+    attempts_taken;
+bool promptForName = false;
+char randByte, ans;
 string diffStr, fname;
 
 // Function declarations
 
+unsigned int rng(unsigned int min, unsigned int max);
 int diffChoose();
 int rngSet();
-unsigned int rng(unsigned int min, unsigned int max);
+void rngSeed();
 void game();
 void fileAsk();
 
-/* Seed RNG and proceed, or read from score file if an argument is passed. */
+/* Read from score file if argument is passed, otherwise proceed. */
 int main(int argc, char *argv[]) {
   string ftxt;
-  if (argv[1]) {
-    ifstream f(argv[1]);
-    cout << "Reading score file '" << argv[1] << "'...\n";
-    if (!f) {
-      cerr << "\a\e[33;1;31mfatal: Unable to open file for reading.\n\e[0m";
-      return 2;
-    }
-    while (getline(f, ftxt))
-      cout << ftxt << "\n";
-    f.close();
-    return 0;
-  } else {
-    srand(time(NULL));
-    return diffChoose();
+  if (&argv[1] != NULL) {
+    if (strcmp(argv[1], "-s")) {
+      ifstream f(argv[1]);
+      cout << "Reading score file '" << argv[1] << "'...\n";
+      if (f.fail()) {
+        cerr << "\a\e[33;1;31mfatal: Unable to open file for reading.\e[0m\n";
+        return 2;
+      }
+      while (getline(f, ftxt))
+        cout << ftxt << "\n";
+      f.close();
+      return 0;
+    } else if (!strcmp(argv[1], "-s"))
+      promptForName = true;
   }
+  rngSeed();
+  return diffChoose();
+}
+
+/* Read a single byte from /dev/urandom, convert that to an integer, and seed
+ * RNG. */
+void rngSeed() {
+  ifstream f("/dev/urandom");
+  if (f.fail()) {
+    cerr << "\a\e[33;1;31mfatal: Unable to open /dev/urandom\e[0m\n";
+    exit(2);
+  }
+  f.get(randByte);
+  randInt = int(randByte);
+  f.close();
+  srand(randInt);
 }
 
 /* Create difficulty prompt and set variables based on response */
@@ -59,7 +79,7 @@ int diffChoose() {
     diffStr = "Hard";
     break;
   default:
-    cerr << "\a\n\e[33;1;31mfatal: Invalid difficulty value.\n\e[0m";
+    cerr << "\a\n\e[33;1;31mfatal: Invalid difficulty value.\e[0m\n";
     exit(1);
     break;
   }
@@ -100,7 +120,7 @@ void game() {
       attempts--;
       attempts_taken++;
       cout << "\a\e[33;1;37mCorrect!\nAttempts taken: " << attempts_taken
-           << "\n\e[0m";
+           << "\e[0m\n";
       fileAsk();
     } else {
       while (num_ans != num && attempts > 0) {
@@ -111,7 +131,7 @@ void game() {
     }
   } else
     cout << "\a\e[33;1;37m\nYou ran out of attempts!\nThe correct number was "
-         << num << ".\n\e[0m";
+         << num << ".\e[0m\n";
 }
 
 /* Prompt the user and ask if they wish to write contents about their session to
@@ -121,17 +141,23 @@ void fileAsk() {
           "(y/n): ";
   cin >> ans;
   if (ans == 'y') {
-    cout << "Please enter a name for your save: ";
-    cin >> fname;
     ofstream f("scores.txt", ios_base::app); // Append, don't overwrite.
-    if (!f) {
+    if (f.fail()) {
       cerr << "\a\e[33;1;31mfatal: Unable to write to score file. Do you have "
               "write permissions?\e[0m\n";
       exit(2);
     }
-    f << "\t" << fname << "\t\t\t\tAttempts taken: " << attempts_taken
-      << "\t\t\t\tAttempts left: " << attempts
-      << "\t\t\t\tDifficulty: " << diffStr << "\n";
+    if (promptForName) {
+      cout << "Please enter the name you would like to use for your save: ";
+      cin >> fname;
+      f << "\t" << fname << "\t\t\t\tAttempts taken: " << attempts_taken
+        << "\t\t\t\tAttempts left: " << attempts
+        << "\t\t\t\tDifficulty: " << diffStr << "\n";
+    } else {
+      f << "\t" << getlogin() << "\t\t\t\tAttempts taken: " << attempts_taken
+        << "\t\t\t\tAttempts left: " << attempts
+        << "\t\t\t\tDifficulty: " << diffStr << "\n";
+    }
     f.close();
     cout << "Information written to 'scores.txt'\n";
   }

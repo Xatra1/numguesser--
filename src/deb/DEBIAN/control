@@ -1,5 +1,5 @@
 Package: numguesser++
-Version: 1.0
+Version: 1.1
 Maintainer: Xatra1
 Architecture: all
 Description: A random number guessing game written in C++.
