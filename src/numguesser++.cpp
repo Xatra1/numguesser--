@@ -1,18 +1,18 @@
 // Header inclusions
-#include <cstdlib> //rand()
+#include <cstdlib> //NULL declaration, exit(), rand(), srand()
 #include <cstring> //strcmp()
-#include <fstream> //File operations
-#include <iostream>
-#include <string>   //String type
+#include <fstream> //ifstream, ofstream
+#include <iostream> //cerr, cin, cout, ios_base
+#include <string>   //getline(), string type
 #include <unistd.h> //getlogin()
 using namespace std;
 
 // Variables
 
-int randInt, num, diff, num_ans, num_range_min, num_range_max, attempts,
+int rand_int, num, diff, num_ans, num_range_min, num_range_max, attempts,
     attempts_taken;
-bool promptForName = false;
-char randByte, ans;
+bool prompt_for_name = false;
+char rand_byte, ans;
 string diffStr, fname;
 
 // Function declarations
@@ -24,10 +24,10 @@ void rngSeed();
 void game();
 void fileAsk();
 
-/* Read from score file if argument is passed, otherwise proceed. */
+/* Read from score file if argument is passed or if argument '-s' is passed, prompt for a custom save name. Otherwise, proceed. */
 int main(int argc, char *argv[]) {
   string ftxt;
-  if (&argv[1] != NULL) {
+  if (argv[1]) {
     if (strcmp(argv[1], "-s")) {
       ifstream f(argv[1]);
       cout << "Reading score file '" << argv[1] << "'...\n";
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
       f.close();
       return 0;
     } else if (!strcmp(argv[1], "-s"))
-      promptForName = true;
+      prompt_for_name = true;
   }
   rngSeed();
   return diffChoose();
@@ -54,10 +54,10 @@ void rngSeed() {
     cerr << "\a\e[33;1;31mfatal: Unable to open /dev/urandom\e[0m\n";
     exit(2);
   }
-  f.get(randByte);
-  randInt = int(randByte);
+  f.get(rand_byte);
+  rand_int = int(rand_byte);
   f.close();
-  srand(randInt);
+  srand(rand_int);
 }
 
 /* Create difficulty prompt and set variables based on response */
@@ -95,7 +95,7 @@ int diffChoose() {
   return rngSet();
 }
 
-/* Generate a random value between unsigned ints min and max */
+/* Generate a random value between min and max */
 unsigned int rng(unsigned int min, unsigned int max) {
   return (rand() % ((max + 1) - min) + min);
 }
@@ -147,17 +147,13 @@ void fileAsk() {
               "write permissions?\e[0m\n";
       exit(2);
     }
-    if (promptForName) {
+    if (prompt_for_name) {
       cout << "Please enter the name you would like to use for your save: ";
       cin >> fname;
-      f << "\t" << fname << "\t\t\t\tAttempts taken: " << attempts_taken
+    } else fname = getlogin();
+    f << "\t" << fname << "\t\t\t\tAttempts taken: " << attempts_taken
         << "\t\t\t\tAttempts left: " << attempts
         << "\t\t\t\tDifficulty: " << diffStr << "\n";
-    } else {
-      f << "\t" << getlogin() << "\t\t\t\tAttempts taken: " << attempts_taken
-        << "\t\t\t\tAttempts left: " << attempts
-        << "\t\t\t\tDifficulty: " << diffStr << "\n";
-    }
     f.close();
     cout << "Information written to 'scores.txt'\n";
   }
