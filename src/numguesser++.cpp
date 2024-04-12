@@ -99,8 +99,8 @@ void game() {
     if (num_ans == num) {
       attempts--;
       attempts_taken++;
-      cout << "\e[33;1;37mCorrect!\nAttempts taken: " << attempts_taken
-           << "\n\a\e[0m";
+      cout << "\a\e[33;1;37mCorrect!\nAttempts taken: " << attempts_taken
+           << "\n\e[0m";
       fileAsk();
     } else {
       while (num_ans != num && attempts > 0) {
@@ -110,7 +110,7 @@ void game() {
       }
     }
   } else
-    cout << "\e[33;1;37m\nYou ran out of attempts!\n\aThe correct number was "
+    cout << "\a\e[33;1;37m\nYou ran out of attempts!\nThe correct number was "
          << num << ".\n\e[0m";
 }
 
@@ -125,8 +125,8 @@ void fileAsk() {
     cin >> fname;
     ofstream f("scores.txt", ios_base::app); // Append, don't overwrite.
     if (!f) {
-      cerr << "\e[33;1;31mfatal: Unable to write to score file. Do you have "
-              "write permissions?\e[0m\a\n";
+      cerr << "\a\e[33;1;31mfatal: Unable to write to score file. Do you have "
+              "write permissions?\e[0m\n";
       exit(2);
     }
     f << "\t" << fname << "\t\t\t\tAttempts taken: " << attempts_taken
