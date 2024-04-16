@@ -1,9 +1,9 @@
 // Header inclusions
-#include <cstdlib> //NULL declaration, exit(), rand(), srand()
-#include <cstring> //strcmp()
-#include <fstream> //ifstream, ofstream
+#include <cstdlib>  //NULL declaration, exit(), rand(), srand(), size_t type
+#include <cstring>  //strcmp()
+#include <fstream>  //ifstream, ofstream
 #include <iostream> //cerr, cin, cout, ios_base
-#include <string>   //getline(), string type
+#include <string>   //getline(), stoi(), string type
 #include <unistd.h> //getlogin()
 using namespace std;
 
@@ -13,7 +13,7 @@ int rand_int, num, diff, num_ans, num_range_min, num_range_max, attempts,
     attempts_taken;
 bool prompt_for_name = false;
 char rand_byte, ans;
-string diffStr, fname;
+string diffStr, fname, ver = "numguesser++ v1.1";
 
 // Function declarations
 
@@ -24,30 +24,81 @@ void rngSeed();
 void game();
 void fileAsk();
 
-/* Read from score file if argument is passed or if argument '-s' is passed, prompt for a custom save name. Otherwise, proceed. */
+// Handle any arguments that are passed to the program.
 int main(int argc, char *argv[]) {
   string ftxt;
   if (argv[1]) {
-    if (strcmp(argv[1], "-s")) {
+    if (strcmp(argv[1], "-s") && strcmp(argv[1], "-d") &&
+        strcmp(argv[1], "-h") && strcmp(argv[1], "-v") &&
+        strcmp(argv[1], "--help")) {
       ifstream f(argv[1]);
       cout << "Reading score file '" << argv[1] << "'...\n";
       if (f.fail()) {
-        cerr << "\a\e[33;1;31mfatal: Unable to open file for reading.\e[0m\n";
+        cerr << "\a\e[33;1;31mfatal: Unable to open file " << argv[1]
+             << " for reading.\e[0m\n";
         return 2;
       }
       while (getline(f, ftxt))
-        cout << ftxt << "\n";
+        cout << ftxt << '\n';
       f.close();
       return 0;
     } else if (!strcmp(argv[1], "-s"))
       prompt_for_name = true;
+    else if (!strcmp(argv[1], "-d") && argv[2]) {
+      string arg = argv[2];
+      size_t pos;
+      try {
+        diff = stoi(arg, &pos);
+        if (diff < 1 || diff > 3) {
+          cout << "\e[33;1;33mwarning:\e[0m Invalid difficulty value (Expected "
+                  "1-3 inclusive, got "
+               << diff << ")\n";
+          cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+          diff = 0;
+        }
+      } catch (invalid_argument const &ex) {
+        cout << "\a\e[33;1;33mwarning:\e[0m Expected integer for argument "
+                "'-d'\n";
+        cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+        diff = 0;
+      } catch (out_of_range const &ex) {
+        cout << "\a\e[33;1;33mwarning:\e[0m Given integer for argument '-d' is "
+                "too large.\n";
+        cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+        diff = 0;
+      }
+    } else if (!strcmp(argv[1], "-d") && !argv[2]) {
+      cout << "\e[33;1;33mwarning:\e[0m Expected integer for argument '-d', "
+              "got nothing.\n";
+      cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+      diff = 0;
+    } else if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+      cout
+          << "Usage: numguesser++ [OPTION...]\nnumguesser++ is a C++ rewrite "
+             "of numguesser, a random number guessing game originally\nwritten "
+             "in C.\n\n  -d 1-3\t\t     Chooses the difficulty of the game, "
+             "skipping the difficulty\n\t\t\t     select phase. Accepts any "
+             "value from 1-3 inclusive.\n\n  -s\t\t\t     Prompts for a custom "
+             "save name after a victory. If this\n\t\t\t     option is not "
+             "passed, the username of the user who called\n\t\t\t     the "
+             "program is used instead.\n\n  -h, --help, --usage\t     Displays "
+             "this help document and exits.\n\n  -v\t\t\t     Displays the "
+             "program's version string and exits.\n\nOnly one argument can be "
+             "passed to the program at a time. If multiple arguments "
+             "are\npassed, they will be ignored.\n\nReport bugs to "
+             "https://github.com/Xatra1/numguesser-plus-plus\n";
+      return 0;
+    } else if (!strcmp(argv[1], "-v")) {
+      cout << ver << '\n';
+      return 0;
+    }
   }
   rngSeed();
   return diffChoose();
 }
 
-/* Read a single byte from /dev/urandom, convert that to an integer, and seed
- * RNG. */
+// Read a single byte from /dev/urandom, convert that to an integer, and seed
+// RNG.
 void rngSeed() {
   ifstream f("/dev/urandom");
   if (f.fail()) {
@@ -60,11 +111,13 @@ void rngSeed() {
   srand(rand_int);
 }
 
-/* Create difficulty prompt and set variables based on response */
+// Create difficulty prompt and set variables based on response
 int diffChoose() {
-  cout << "Choose a difficulty.\n(1) - Easy (10 attempts)\n(2) - Normal (5 "
-          "attempts)\n(3) - Hard (1 attempt)\nMake a selection: ";
-  cin >> diff;
+  if (!diff) {
+    cout << "Choose a difficulty.\n(1) - Easy (10 attempts)\n(2) - Normal (5 "
+            "attempts)\n(3) - Hard (1 attempt)\nMake a selection: ";
+    cin >> diff;
+  }
   switch (diff) {
   case 1:
     attempts = 10;
@@ -88,19 +141,20 @@ int diffChoose() {
        << " attempt(s)\e[0m to get the number correct.\nIs this correct? "
           "(y/n): ";
   cin >> ans;
-  if (ans == 'n') {
-    while (ans != 'y')
+  if (ans == 'n')
+    while (ans != 'y') {
+      diff = 0;
       diffChoose();
-  }
+    }
   return rngSet();
 }
 
-/* Generate a random value between min and max */
+// Generate a random value between min and max
 unsigned int rng(unsigned int min, unsigned int max) {
   return (rand() % ((max + 1) - min) + min);
 }
 
-/* Prepare random values and finalize return value chain */
+// Prepare random values and finalize return value chain
 int rngSet() {
   num = rng(1, 100);
   num_range_min = num - rng(1, 10);
@@ -109,8 +163,8 @@ int rngSet() {
   return 0;
 }
 
-/* Prompt for user answer and terminate game if user answer is equal to random
- * num. Otherwise, loop until user is correct or no attempts remain */
+// Prompt for user answer and terminate game if user answer is equal to random
+// num. Otherwise, loop until user is correct or no attempts remain
 void game() {
   if (attempts > 0) {
     cout << "\nNumber is between " << num_range_min << " and " << num_range_max
@@ -134,8 +188,8 @@ void game() {
          << num << ".\e[0m\n";
 }
 
-/* Prompt the user and ask if they wish to write contents about their session to
- * a file. */
+// Prompt the user and ask if they wish to write contents about their session to
+// a file.
 void fileAsk() {
   cout << "Do you want to write information about your run to a score file? "
           "(y/n): ";
@@ -150,12 +204,13 @@ void fileAsk() {
     if (prompt_for_name) {
       cout << "Please enter the name you would like to use for your save: ";
       cin >> fname;
-    } else fname = getlogin();
+    } else
+      fname = getlogin();
     f << "\t" << fname << "\t\t\t\tAttempts taken: " << attempts_taken
-        << "\t\t\t\tAttempts left: " << attempts
-        << "\t\t\t\tDifficulty: " << diffStr << "\n";
+      << "\t\t\t\tAttempts left: " << attempts
+      << "\t\t\t\tDifficulty: " << diffStr << '\n';
     f.close();
-    cout << "Information written to 'scores.txt'\n";
+    cout << "\a\e[33;1;37mInformation written to 'scores.txt'\e[0m\n";
   }
   exit(0);
 }
