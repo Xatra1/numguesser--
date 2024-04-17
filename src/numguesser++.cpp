@@ -1,47 +1,57 @@
 // Header inclusions
-#include <cstdlib>  //NULL declaration, exit(), rand(), srand(), size_t type
-#include <cstring>  //strcmp()
-#include <fstream>  //ifstream, ofstream
-#include <iostream> //cerr, cin, cout, ios_base
-#include <string>   //getline(), stoi(), string type
-#include <unistd.h> //getlogin()
+
+#include <cstdlib>    //NULL declaration, exit(), rand(), srand(), size_t type
+#include <cstring>    //strcmp()
+#include <filesystem> //C++17 method for verifying file extensions
+#include <fstream>    //ifstream, ofstream
+#include <iostream>   //cerr, cin, cout, ios_base
+#include <string>     //getline(), stoi(), string type
+#include <unistd.h>   //getlogin()
 using namespace std;
 
 // Variables
 
 int rand_int, num, diff, num_ans, num_range_min, num_range_max, attempts,
     attempts_taken;
-bool prompt_for_name = false;
+bool prompt_for_name, arg_ignored;
 char rand_byte, ans;
-string diffStr, fname, ver = "numguesser++ v1.1";
+string diff_str, fname, ver = "numguesser++ v1.2";
 
 // Function declarations
 
 unsigned int rng(unsigned int min, unsigned int max);
-int diffChoose();
-int rngSet();
-void rngSeed();
+int diff_choose();
+int rng_set();
+void rng_seed();
 void game();
-void fileAsk();
+void file_ask();
 
 // Handle any arguments that are passed to the program.
 int main(int argc, char *argv[]) {
   string ftxt;
   if (argv[1]) {
-    if (strcmp(argv[1], "-s") && strcmp(argv[1], "-d") &&
-        strcmp(argv[1], "-h") && strcmp(argv[1], "-v") &&
-        strcmp(argv[1], "--help")) {
-      ifstream f(argv[1]);
-      cout << "Reading score file '" << argv[1] << "'...\n";
+    if ((!strcmp(argv[1], "-f") || !strcmp(argv[1], "--readfile")) && argv[2]) {
+      filesystem::path file = argv[2];
+      ifstream f(argv[2]);
+      cout << "Reading score file '" << argv[2] << "'...\n";
       if (f.fail()) {
-        cerr << "\a\e[33;1;31mfatal: Unable to open file " << argv[1]
+        cerr << "\a\e[33;1;31mfatal: Unable to open file " << argv[2]
              << " for reading.\e[0m\n";
         return 2;
+      } else if (file.extension() != ".scf") {
+        cerr << "\a\e[33;1;31mfatal: Score file has file extension "
+             << file.extension() << " (expected .scf)\e[0m\n";
+        return 3;
       }
       while (getline(f, ftxt))
         cout << ftxt << '\n';
       f.close();
       return 0;
+    } else if ((!strcmp(argv[1], "-f") || !strcmp(argv[1], "--read-file")) &&
+               !argv[2]) {
+      cout << "\e[33;1;33mwarning:\e[0m Expected FILE for argument " << argv[1]
+           << '\n';
+      arg_ignored = true;
     } else if (!strcmp(argv[1], "-s"))
       prompt_for_name = true;
     else if (!strcmp(argv[1], "-d") && argv[2]) {
@@ -53,53 +63,63 @@ int main(int argc, char *argv[]) {
           cout << "\e[33;1;33mwarning:\e[0m Invalid difficulty value (Expected "
                   "1-3 inclusive, got "
                << diff << ")\n";
-          cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+          arg_ignored = true;
           diff = 0;
         }
       } catch (invalid_argument const &ex) {
-        cout << "\a\e[33;1;33mwarning:\e[0m Expected integer for argument "
+        cout << "\e[33;1;33mwarning:\e[0m Expected integer for argument "
                 "'-d'\n";
-        cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+        arg_ignored = true;
         diff = 0;
       } catch (out_of_range const &ex) {
-        cout << "\a\e[33;1;33mwarning:\e[0m Given integer for argument '-d' is "
+        cout << "\e[33;1;33mwarning:\e[0m Given integer for argument '-d' is "
                 "too large.\n";
-        cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+        arg_ignored = true;
         diff = 0;
       }
     } else if (!strcmp(argv[1], "-d") && !argv[2]) {
       cout << "\e[33;1;33mwarning:\e[0m Expected integer for argument '-d', "
               "got nothing.\n";
-      cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+      arg_ignored = true;
       diff = 0;
-    } else if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
-      cout
-          << "Usage: numguesser++ [OPTION...]\nnumguesser++ is a C++ rewrite "
-             "of numguesser, a random number guessing game originally\nwritten "
-             "in C.\n\n  -d 1-3\t\t     Chooses the difficulty of the game, "
-             "skipping the difficulty\n\t\t\t     select phase. Accepts any "
-             "value from 1-3 inclusive.\n\n  -s\t\t\t     Prompts for a custom "
-             "save name after a victory. If this\n\t\t\t     option is not "
-             "passed, the username of the user who called\n\t\t\t     the "
-             "program is used instead.\n\n  -h, --help, --usage\t     Displays "
-             "this help document and exits.\n\n  -v\t\t\t     Displays the "
-             "program's version string and exits.\n\nOnly one argument can be "
-             "passed to the program at a time. If multiple arguments "
-             "are\npassed, they will be ignored.\n\nReport bugs to "
-             "https://github.com/Xatra1/numguesser-plus-plus\n";
+    } else if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ||
+               !strcmp(argv[1], "--usage")) {
+      cout << "Usage: numguesser++ [OPTION...] or...\n       numguesser++ "
+              "[OPTION...] [PARAM...]\n\nnumguesser++ is a C++ rewrite of "
+              "numguesser, a random number guessing game originally\nwritten "
+              "in C.\n\n  -d 1-3\t\t     Chooses the difficulty of the game, "
+              "skipping the difficulty\n\t\t\t     select phase. Accepts any "
+              "value from 1-3 inclusive.\n\n  -s\t\t\t     Prompts for a "
+              "custom save name after a victory. If this\n\t\t\t     option is "
+              "not passed, the username of the user who called\n\t\t\t     the "
+              "program is used instead.\n\n  -f, --readfile FILE\t     Reads "
+              "from FILE and exits. FILE must have the '.scf' extension.\n\n  "
+              "-h, --help, --usage\t     Displays this help document and "
+              "exits.\n\n  -v, --version\t\t\t     Displays the program's "
+              "version string and exits.\n\nMandatory or optional arguments to "
+              "long options are also mandatory or optional for\nany "
+              "corresponding short options.\n\nOnly one argument can be passed "
+              "to the program at a time. If multiple arguments are\npassed, "
+              "they will be ignored.\n\nReport bugs to "
+              "https://github.com/Xatra1/numguesser-plus-plus\n";
       return 0;
-    } else if (!strcmp(argv[1], "-v")) {
+    } else if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
       cout << ver << '\n';
       return 0;
+    } else if (argv[1]) {
+      cout << "\e[33;1;33mwarning:\e[0m Unknown argument '" << argv[1] << "'\n";
+      arg_ignored = true;
     }
+    if (arg_ignored)
+      cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
   }
-  rngSeed();
-  return diffChoose();
+  rng_seed();
+  return diff_choose();
 }
 
 // Read a single byte from /dev/urandom, convert that to an integer, and seed
 // RNG.
-void rngSeed() {
+void rng_seed() {
   ifstream f("/dev/urandom");
   if (f.fail()) {
     cerr << "\a\e[33;1;31mfatal: Unable to open /dev/urandom\e[0m\n";
@@ -112,7 +132,7 @@ void rngSeed() {
 }
 
 // Create difficulty prompt and set variables based on response
-int diffChoose() {
+int diff_choose() {
   if (!diff) {
     cout << "Choose a difficulty.\n(1) - Easy (10 attempts)\n(2) - Normal (5 "
             "attempts)\n(3) - Hard (1 attempt)\nMake a selection: ";
@@ -121,22 +141,22 @@ int diffChoose() {
   switch (diff) {
   case 1:
     attempts = 10;
-    diffStr = "Easy";
+    diff_str = "Easy";
     break;
   case 2:
     attempts = 5;
-    diffStr = "Normal";
+    diff_str = "Normal";
     break;
   case 3:
     attempts = 1;
-    diffStr = "Hard";
+    diff_str = "Hard";
     break;
   default:
     cerr << "\a\n\e[33;1;31mfatal: Invalid difficulty value.\e[0m\n";
     exit(1);
     break;
   }
-  cout << "\nYou selected \e[33;1;37m" << diffStr
+  cout << "\nYou selected \e[33;1;37m" << diff_str
        << ".\e[0m You will have \e[33;1;37m" << attempts
        << " attempt(s)\e[0m to get the number correct.\nIs this correct? "
           "(y/n): ";
@@ -144,9 +164,9 @@ int diffChoose() {
   if (ans == 'n')
     while (ans != 'y') {
       diff = 0;
-      diffChoose();
+      diff_choose();
     }
-  return rngSet();
+  return rng_set();
 }
 
 // Generate a random value between min and max
@@ -155,7 +175,7 @@ unsigned int rng(unsigned int min, unsigned int max) {
 }
 
 // Prepare random values and finalize return value chain
-int rngSet() {
+int rng_set() {
   num = rng(1, 100);
   num_range_min = num - rng(1, 10);
   num_range_max = num + rng(1, 10);
@@ -175,7 +195,7 @@ void game() {
       attempts_taken++;
       cout << "\a\e[33;1;37mCorrect!\nAttempts taken: " << attempts_taken
            << "\e[0m\n";
-      fileAsk();
+      file_ask();
     } else {
       while (num_ans != num && attempts > 0) {
         attempts--;
@@ -190,12 +210,12 @@ void game() {
 
 // Prompt the user and ask if they wish to write contents about their session to
 // a file.
-void fileAsk() {
+void file_ask() {
   cout << "Do you want to write information about your run to a score file? "
           "(y/n): ";
   cin >> ans;
   if (ans == 'y') {
-    ofstream f("scores.txt", ios_base::app); // Append, don't overwrite.
+    ofstream f("scores.scf", ios_base::app); // Append, don't overwrite.
     if (f.fail()) {
       cerr << "\a\e[33;1;31mfatal: Unable to write to score file. Do you have "
               "write permissions?\e[0m\n";
@@ -208,9 +228,9 @@ void fileAsk() {
       fname = getlogin();
     f << "\t" << fname << "\t\t\t\tAttempts taken: " << attempts_taken
       << "\t\t\t\tAttempts left: " << attempts
-      << "\t\t\t\tDifficulty: " << diffStr << '\n';
+      << "\t\t\t\tDifficulty: " << diff_str << '\n';
     f.close();
-    cout << "\a\e[33;1;37mInformation written to 'scores.txt'\e[0m\n";
+    cout << "\a\e[33;1;37mInformation written to 'scores.scf'\e[0m\n";
   }
   exit(0);
 }
