@@ -1,13 +1,17 @@
 // Header inclusions
 
-#include <cstdlib>    //NULL declaration, exit(), rand(), srand(), size_t type
-#include <cstring>    //strcmp()
-#include <filesystem> //C++17 method for verifying file extensions
-#include <fstream>    //ifstream, ofstream
-#include <iostream>   //cerr, cin, cout, ios_base
-#include <string>     //getline(), stoi(), string type
-#include <unistd.h>   //getlogin()
+#include <cstdlib>    // exit(), rand(), srand(), size_t type
+#include <cstring>    // strcmp()
+#include <filesystem> // filesystem::path
+#include <fstream>    // ifstream, ofstream
+#include <iostream>   // cerr, cin, cout, ios_base
+#include <string>     // getline(), stoi(), string type
+#include <unistd.h>   // getlogin()
+
+// Namespaces
+
 using namespace std;
+namespace fs = filesystem;
 
 // Variables
 
@@ -19,19 +23,22 @@ string diff_str, fname, ver = "numguesser++ v1.2";
 
 // Function declarations
 
-unsigned int rng(unsigned int min, unsigned int max);
+uint rng(uint min, uint max);
 int diff_choose();
 int rng_set();
 void rng_seed();
 void game();
 void file_ask();
 
+// Generate a random value between min and max
+uint rng(uint min, uint max) { return (rand() % ((max + 1) - min) + min); }
+
 // Handle any arguments that are passed to the program.
 int main(int argc, char *argv[]) {
   string ftxt;
   if (argv[1]) {
     if ((!strcmp(argv[1], "-f") || !strcmp(argv[1], "--readfile")) && argv[2]) {
-      filesystem::path file = argv[2];
+      fs::path file = argv[2];
       ifstream f(argv[2]);
       cout << "Reading score file '" << argv[2] << "'...\n";
       if (f.fail()) {
@@ -93,14 +100,14 @@ int main(int argc, char *argv[]) {
               "custom save name after a victory. If this\n\t\t\t     option is "
               "not passed, the username of the user who called\n\t\t\t     the "
               "program is used instead.\n\n  -f, --readfile FILE\t     Reads "
-              "from FILE and exits. FILE must have the '.scf' extension.\n\n  "
-              "-h, --help, --usage\t     Displays this help document and "
-              "exits.\n\n  -v, --version\t\t\t     Displays the program's "
-              "version string and exits.\n\nMandatory or optional arguments to "
-              "long options are also mandatory or optional for\nany "
-              "corresponding short options.\n\nOnly one argument can be passed "
-              "to the program at a time. If multiple arguments are\npassed, "
-              "they will be ignored.\n\nReport bugs to "
+              "from FILE and exits. FILE must have the '.scf'\n\t\t\t     "
+              "extension.\n\n  -h, --help, --usage\t     Displays this help "
+              "document and exits.\n\n  -v, --version\t\t     Displays the "
+              "program's version string and exits.\n\nMandatory or optional "
+              "arguments to long options are also mandatory or optional "
+              "for\nany corresponding short options.\n\nOnly one argument can "
+              "be passed to the program at a time. If multiple arguments "
+              "are\npassed, they will be ignored.\n\nReport bugs to "
               "https://github.com/Xatra1/numguesser-plus-plus\n";
       return 0;
     } else if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
@@ -110,8 +117,10 @@ int main(int argc, char *argv[]) {
       cout << "\e[33;1;33mwarning:\e[0m Unknown argument '" << argv[1] << "'\n";
       arg_ignored = true;
     }
+    if (argv[3])
+      arg_ignored = true;
     if (arg_ignored)
-      cout << "\e[33;1;33mwarning:\e[0m Argument ignored.\n";
+      cout << "\e[33;1;33mwarning:\e[0m An argument was ignored.\n";
   }
   rng_seed();
   return diff_choose();
@@ -169,11 +178,6 @@ int diff_choose() {
   return rng_set();
 }
 
-// Generate a random value between min and max
-unsigned int rng(unsigned int min, unsigned int max) {
-  return (rand() % ((max + 1) - min) + min);
-}
-
 // Prepare random values and finalize return value chain
 int rng_set() {
   num = rng(1, 100);
@@ -218,7 +222,7 @@ void file_ask() {
     ofstream f("scores.scf", ios_base::app); // Append, don't overwrite.
     if (f.fail()) {
       cerr << "\a\e[33;1;31mfatal: Unable to write to score file. Do you have "
-              "write permissions?\e[0m\n";
+              "write permissions here?\e[0m\n";
       exit(2);
     }
     if (prompt_for_name) {
