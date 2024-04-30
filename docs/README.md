@@ -1,12 +1,17 @@
-# Building from Source
-## Prerequisites
+## Building from Source
+### Prerequisites
 - g++
 - make 
 - dpkg*
   
 *Optional.
-## Compiling
-Open a terminal in the same directory as the makefile and run ``make``. This will create an executable in ``src/deb/usr/local/bin/`` named ``numguesser++``
+### Compiling
+#### Automatic
+If you have all required dependencies (including optional) you can execute ``mkng++.sh``. Any argument you pass to the shell script will be passed when the script runs the game.
+  
+For example, if you wished to compile the game and open the game's help document, you can execute ``mkng++ -h``, ``mkng++.sh --help`` or ``mkng++.sh --usage``.
+#### Manual
+Open a terminal in the same directory as the makefile and run ``make ng++``. This will create an executable in ``src/deb/usr/local/bin/`` named ``numguesser++``
    
 If your system has dpkg installed, you can then run ``make build-pkg`` to build and install a Debian package.
   

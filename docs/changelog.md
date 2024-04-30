@@ -9,3 +9,7 @@
 - Score files now use the .scf extension, which is now required for the game to read from the file.
 - Fixed the '--usage' arg not being handled at all even when passed.
 - '-v' now has a corresponding long option '--version'
+
+## v1.3
+- Argument '--readfile' is now '--read-file'
+- You can now run 'ng++' to execute the program instead of only 'numguesser++'

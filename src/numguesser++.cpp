@@ -5,13 +5,14 @@
 #include <filesystem> // filesystem::path
 #include <fstream>    // ifstream, ofstream
 #include <iostream>   // cerr, cin, cout, ios_base
-#include <string>     // getline(), stoi(), string type
+#include <string>     // getline(), stoi(), str type
 #include <unistd.h>   // getlogin()
-
-// Namespaces
-
 using namespace std;
+
+// Aliases
+
 namespace fs = filesystem;
+typedef string str;
 
 // Variables
 
@@ -19,7 +20,7 @@ int rand_int, num, diff, num_ans, num_range_min, num_range_max, attempts,
     attempts_taken;
 bool prompt_for_name, arg_ignored;
 char rand_byte, ans;
-string diff_str, fname, ver = "numguesser++ v1.2";
+str diff_str, fname, ver = "numguesser++ v1.3";
 
 // Function declarations
 
@@ -35,9 +36,10 @@ uint rng(uint min, uint max) { return (rand() % ((max + 1) - min) + min); }
 
 // Handle any arguments that are passed to the program.
 int main(int argc, char *argv[]) {
-  string ftxt;
+  str ftxt;
   if (argv[1]) {
-    if ((!strcmp(argv[1], "-f") || !strcmp(argv[1], "--readfile")) && argv[2]) {
+    if ((!strcmp(argv[1], "-f") || !strcmp(argv[1], "--read-file")) &&
+        argv[2]) {
       fs::path file = argv[2];
       ifstream f(argv[2]);
       cout << "Reading score file '" << argv[2] << "'...\n";
@@ -56,37 +58,43 @@ int main(int argc, char *argv[]) {
       return 0;
     } else if ((!strcmp(argv[1], "-f") || !strcmp(argv[1], "--read-file")) &&
                !argv[2]) {
-      cout << "\e[33;1;33mwarning:\e[0m Expected FILE for argument " << argv[1]
-           << '\n';
+      cout << "\e[33;1;33mwarning:\e[0m Expected FILE for argument '" << argv[1]
+           << "'. Try 'numguesser++ --help' or 'numguesser++ --usage' for more "
+              "information.\n";
       arg_ignored = true;
     } else if (!strcmp(argv[1], "-s"))
       prompt_for_name = true;
     else if (!strcmp(argv[1], "-d") && argv[2]) {
-      string arg = argv[2];
+      str arg = argv[2];
       size_t pos;
       try {
         diff = stoi(arg, &pos);
         if (diff < 1 || diff > 3) {
           cout << "\e[33;1;33mwarning:\e[0m Invalid difficulty value (Expected "
                   "1-3 inclusive, got "
-               << diff << ")\n";
+               << diff
+               << "). Try 'numguesser++ --help' or 'numguesser++ --usage' for "
+                  "more information.\n";
           arg_ignored = true;
           diff = 0;
         }
       } catch (invalid_argument const &ex) {
         cout << "\e[33;1;33mwarning:\e[0m Expected integer for argument "
-                "'-d'\n";
+                "'-d'. Try 'numguesser++ --help' or 'numguesser++ --usage' for "
+                "more information.\n";
         arg_ignored = true;
         diff = 0;
       } catch (out_of_range const &ex) {
         cout << "\e[33;1;33mwarning:\e[0m Given integer for argument '-d' is "
-                "too large.\n";
+                "too large. Try 'numguesser++ --help' or 'numguesser++ "
+                "--usage' for more information.\n";
         arg_ignored = true;
         diff = 0;
       }
     } else if (!strcmp(argv[1], "-d") && !argv[2]) {
       cout << "\e[33;1;33mwarning:\e[0m Expected integer for argument '-d', "
-              "got nothing.\n";
+              "got nothing. Try 'numguesser++ --help' or 'numguesser++ "
+              "--usage' for more information.\n";
       arg_ignored = true;
       diff = 0;
     } else if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ||
@@ -94,20 +102,21 @@ int main(int argc, char *argv[]) {
       cout << "Usage: numguesser++ [OPTION...] or...\n       numguesser++ "
               "[OPTION...] [PARAM...]\n\nnumguesser++ is a C++ rewrite of "
               "numguesser, a random number guessing game originally\nwritten "
-              "in C.\n\n  -d 1-3\t\t     Chooses the difficulty of the game, "
-              "skipping the difficulty\n\t\t\t     select phase. Accepts any "
-              "value from 1-3 inclusive.\n\n  -s\t\t\t     Prompts for a "
-              "custom save name after a victory. If this\n\t\t\t     option is "
-              "not passed, the username of the user who called\n\t\t\t     the "
-              "program is used instead.\n\n  -f, --readfile FILE\t     Reads "
-              "from FILE and exits. FILE must have the '.scf'\n\t\t\t     "
-              "extension.\n\n  -h, --help, --usage\t     Displays this help "
-              "document and exits.\n\n  -v, --version\t\t     Displays the "
-              "program's version string and exits.\n\nMandatory or optional "
-              "arguments to long options are also mandatory or optional "
-              "for\nany corresponding short options.\n\nOnly one argument can "
-              "be passed to the program at a time. If multiple arguments "
-              "are\npassed, they will be ignored.\n\nReport bugs to "
+              "in C, with some additional enhancements.\n\n  -d 1-3\t\t     "
+              "Chooses the difficulty of the game, skipping the "
+              "difficulty\n\t\t\t     select phase. Accepts any value from 1-3 "
+              "inclusive.\n\n  -s\t\t\t     Prompts for a custom save name "
+              "after a victory. If this\n\t\t\t     option is not passed, the "
+              "username of the user who called\n\t\t\t     the program is used "
+              "instead.\n\n  -f, --read-file FILE\t     Reads from FILE and "
+              "exits. FILE must have the '.scf'\n\t\t\t     extension.\n\n  "
+              "-h, --help, --usage\t     Displays this help document and "
+              "exits.\n\n  -v, --version\t\t     Displays the program's "
+              "version str and exits.\n\nMandatory or optional arguments to "
+              "long options are also mandatory or optional for\nany "
+              "corresponding short options.\n\nOnly one argument can be passed "
+              "to the program at a time. If multiple arguments are\npassed, "
+              "they will be ignored.\n\nReport bugs to "
               "https://github.com/Xatra1/numguesser-plus-plus\n";
       return 0;
     } else if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
@@ -117,7 +126,10 @@ int main(int argc, char *argv[]) {
       cout << "\e[33;1;33mwarning:\e[0m Unknown argument '" << argv[1] << "'\n";
       arg_ignored = true;
     }
-    if (argv[3])
+    if (argv[3] &&
+        strcmp(argv[1],
+               "-s")) // If only '-s' is specified, argv[3] would get detected
+                      // and display the argument ignored message.
       arg_ignored = true;
     if (arg_ignored)
       cout << "\e[33;1;33mwarning:\e[0m An argument was ignored.\n";
