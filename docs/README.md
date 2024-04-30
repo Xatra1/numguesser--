@@ -7,7 +7,7 @@
 *Optional.
 ### Compiling
 #### Automatic
-If you have all required dependencies (including optional) you can execute ``mkng++.sh``. Any argument you pass to the shell script will be passed when the script runs the game.
+If you have all required dependencies (including optional) you can execute ``mkng++.sh``. Any argument you pass to the shell script will be passed when the script runs the game. Note that the script assumes the source files are in your home directory.
   
 For example, if you wished to compile the game and open the game's help document, you can execute ``mkng++ -h``, ``mkng++.sh --help`` or ``mkng++.sh --usage``.
 #### Manual

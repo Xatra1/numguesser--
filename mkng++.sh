@@ -1,5 +1,5 @@
 #!/bin/sh
-cd ~/Documents/GitHub\ Projects/numguesser++
+cd ~/numguesser++
 clear
 make ng++
 make build-pkg
