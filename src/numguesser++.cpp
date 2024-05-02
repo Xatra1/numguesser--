@@ -99,25 +99,25 @@ int main(int argc, char *argv[]) {
       diff = 0;
     } else if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ||
                !strcmp(argv[1], "--usage")) {
-      cout << "Usage: numguesser++ [OPTION...] or...\n       numguesser++ "
-              "[OPTION...] [PARAM...]\n\nnumguesser++ is a C++ rewrite of "
-              "numguesser, a random number guessing game originally\nwritten "
-              "in C, with some additional enhancements.\n\n  -d 1-3\t\t     "
-              "Chooses the difficulty of the game, skipping the "
-              "difficulty\n\t\t\t     select phase. Accepts any value from 1-3 "
-              "inclusive.\n\n  -s\t\t\t     Prompts for a custom save name "
-              "after a victory. If this\n\t\t\t     option is not passed, the "
-              "username of the user who called\n\t\t\t     the program is used "
-              "instead.\n\n  -f, --read-file FILE\t     Reads from FILE and "
-              "exits. FILE must have the '.scf'\n\t\t\t     extension.\n\n  "
-              "-h, --help, --usage\t     Displays this help document and "
-              "exits.\n\n  -v, --version\t\t     Displays the program's "
-              "version str and exits.\n\nMandatory or optional arguments to "
-              "long options are also mandatory or optional for\nany "
-              "corresponding short options.\n\nOnly one argument can be passed "
-              "to the program at a time. If multiple arguments are\npassed, "
-              "they will be ignored.\n\nReport bugs to "
-              "https://github.com/Xatra1/numguesser-plus-plus\n";
+      cout
+          << "Usage: numguesser++ [OPTION...] \n    or ng++ "
+             "[OPTION...]\n\nnumguesser++ is a C++ rewrite of numguesser, a "
+             "random number guessing game originally\nwritten in C, with some "
+             "additional enhancements.\n\n  -d 1-3\t\t     Chooses the "
+             "difficulty of the game, skipping the difficulty\n\t\t\t     "
+             "select phase. Accepts any value from 1-3 inclusive.\n\n  "
+             "-s\t\t\t     Prompts for a custom save name after a victory. If "
+             "this\n\t\t\t     option is not passed, the username of the user "
+             "who called\n\t\t\t     the program is used instead.\n\n  -f, "
+             "--read-file FILE\t     Reads from FILE and exits. FILE must have "
+             "the '.scf'\n\t\t\t     extension.\n\n  -h, --help, --usage\t     "
+             "Displays this help document and exits.\n\n  -v, --version\t\t    "
+             " Displays the program's version str and exits.\n\nMandatory or "
+             "optional arguments to long options are also mandatory or "
+             "optional for\nany corresponding short options.\n\nOnly one "
+             "argument can be passed to the program at a time. If multiple "
+             "arguments are\npassed, they will be ignored.\n\nReport bugs to "
+             "https://github.com/Xatra1/numguesser-plus-plus\n";
       return 0;
     } else if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
       cout << ver << '\n';
