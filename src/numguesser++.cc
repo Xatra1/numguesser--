@@ -18,7 +18,7 @@ typedef string str;
 
 int rand_int, num, diff, num_ans, num_range_min, num_range_max, attempts,
     attempts_taken;
-bool prompt_for_name, arg_ignored;
+bool prompt_for_name, arg_ignored, show_num = true;
 char rand_byte, ans;
 str diff_str, fname, ver = "numguesser++ v1.3";
 
@@ -99,37 +99,37 @@ int main(int argc, char *argv[]) {
       diff = 0;
     } else if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ||
                !strcmp(argv[1], "--usage")) {
-      cout
-          << "Usage: numguesser++ [OPTION...] \n    or ng++ "
-             "[OPTION...]\n\nnumguesser++ is a C++ rewrite of numguesser, a "
-             "random number guessing game originally\nwritten in C, with some "
-             "additional enhancements.\n\n  -d 1-3\t\t     Chooses the "
-             "difficulty of the game, skipping the difficulty\n\t\t\t     "
-             "select phase. Accepts any value from 1-3 inclusive.\n\n  "
-             "-s\t\t\t     Prompts for a custom save name after a victory. If "
-             "this\n\t\t\t     option is not passed, the username of the user "
-             "who called\n\t\t\t     the program is used instead.\n\n  -f, "
-             "--read-file FILE\t     Reads from FILE and exits. FILE must have "
-             "the '.scf'\n\t\t\t     extension.\n\n  -h, --help, --usage\t     "
-             "Displays this help document and exits.\n\n  -v, --version\t\t    "
-             " Displays the program's version str and exits.\n\nMandatory or "
-             "optional arguments to long options are also mandatory or "
-             "optional for\nany corresponding short options.\n\nOnly one "
-             "argument can be passed to the program at a time. If multiple "
-             "arguments are\npassed, they will be ignored.\n\nReport bugs to "
-             "https://github.com/Xatra1/numguesser-plus-plus\n";
+      cout << "Usage: numguesser++ [OPTION...] \n    or ng++ "
+              "[OPTION...]\n\nnumguesser++ is a C++ rewrite of numguesser, a "
+              "random number guessing game originally\nwritten in C, with some "
+              "additional enhancements.\n\n  -d 1-3\t\t     Chooses the "
+              "difficulty of the game, skipping the difficulty\n\t\t\t     "
+              "select phase. Accepts any value from 1-3 inclusive.\n\n  "
+              "-s\t\t\t     Prompts for a custom save name after a victory. If "
+              "this\n\t\t\t     option is not passed, the username of the user "
+              "who called\n\t\t\t     the program is used instead.\n\n  -f, "
+              "--read-file FILE\t     Reads from FILE and exits. FILE must "
+              "have the '.scf'\n\t\t\t     extension.\n\n  -n\t\t\t     "
+              "Prevents the program from displaying the correct number\n\t\t\t "
+              "    after a loss.\n\n  -h, --help, --usage\t     Displays this "
+              "help document and exits.\n\n  -v, --version\t\t     Displays "
+              "the program's version string and exits.\n\nMandatory or "
+              "optional arguments to long options are also mandatory or "
+              "optional for\nany corresponding short options.\n\nOnly one "
+              "argument can be passed to the program at a time. If multiple "
+              "arguments are\npassed, they will be ignored.\n\nReport bugs to "
+              "https://github.com/Xatra1/numguesser-plus-plus\n";
       return 0;
     } else if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
       cout << ver << '\n';
       return 0;
-    } else if (argv[1]) {
+    } else if (!strcmp(argv[1], "-n"))
+      show_num = false;
+    else if (argv[1]) {
       cout << "\e[33;1;33mwarning:\e[0m Unknown argument '" << argv[1] << "'\n";
       arg_ignored = true;
     }
-    if (argv[3] &&
-        strcmp(argv[1],
-               "-s")) // If only '-s' is specified, argv[3] would get detected
-                      // and display the argument ignored message.
+    if (argv[3] && strcmp(argv[1], "-s") && strcmp(argv[1], "-n"))
       arg_ignored = true;
     if (arg_ignored)
       cout << "\e[33;1;33mwarning:\e[0m An argument was ignored.\n";
@@ -219,9 +219,13 @@ void game() {
         game();
       }
     }
-  } else
-    cout << "\a\e[33;1;37m\nYou ran out of attempts!\nThe correct number was "
-         << num << ".\e[0m\n";
+  } else {
+    if (show_num)
+      cout << "\a\e[33;1;37m\nYou ran out of attempts!\nThe correct number was "
+           << num << ".\e[0m\n";
+    else
+      cout << "\a\e[33;1;37m\nYou ran out of attempts!\n\e[0m";
+  }
 }
 
 // Prompt the user and ask if they wish to write contents about their session to

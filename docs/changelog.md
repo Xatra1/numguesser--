@@ -13,3 +13,4 @@
 ## v1.3
 - Argument '--readfile' is now '--read-file'
 - You can now run 'ng++' to execute the program instead of only 'numguesser++'
+- Implemented the '-n' argument from the original version of numguesser, which prevents the correct number from being displayed after a loss.

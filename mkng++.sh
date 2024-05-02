@@ -15,5 +15,4 @@ if [[ "$ans" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     clear
 fi
 
-echo
 ng++ $1 $2
