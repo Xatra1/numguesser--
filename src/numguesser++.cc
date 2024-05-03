@@ -64,7 +64,8 @@ int main(int argc, char *argv[]) {
       arg_ignored = true;
     } else if (!strcmp(argv[1], "-s"))
       prompt_for_name = true;
-    else if (!strcmp(argv[1], "-d") && argv[2]) {
+    else if ((!strcmp(argv[1], "-d") || !strcmp(argv[1], "--difficulty")) &&
+             argv[2]) {
       str arg = argv[2];
       size_t pos;
       try {
@@ -156,7 +157,7 @@ void rng_seed() {
 int diff_choose() {
   if (!diff) {
     cout << "Choose a difficulty.\n(1) - Easy (10 attempts)\n(2) - Normal (5 "
-            "attempts)\n(3) - Hard (1 attempt)\nMake a selection: ";
+            "attempts)\n(3) - Hard (1 attempt)\n Make a selection: ";
     cin >> diff;
   }
   switch (diff) {
@@ -177,7 +178,7 @@ int diff_choose() {
     exit(1);
     break;
   }
-  cout << "\nYou selected \e[33;1;37m" << diff_str
+  cout << "\n You selected \e[33;1;37m" << diff_str
        << ".\e[0m You will have \e[33;1;37m" << attempts
        << " attempt(s)\e[0m to get the number correct.\nIs this correct? "
           "(y/n): ";
