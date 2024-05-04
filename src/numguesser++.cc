@@ -186,7 +186,7 @@ void rng_seed() {
 int diff_choose() {
   if (!diff) {
     cout << "Choose a difficulty.\n(1) - Easy (10 attempts)\n(2) - Normal (5 "
-            "attempts)\n(3) - Hard (1 attempt)\n Make a selection: ";
+            "attempts)\n(3) - Hard (1 attempt)\nMake a selection: ";
     cin >> diff;
   }
   switch (diff) {
