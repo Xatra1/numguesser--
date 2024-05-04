@@ -1,5 +1,6 @@
 // Header inclusions
 
+#include <csignal>    // SIGINT, raise(), signal()
 #include <cstdlib>    // exit(), rand(), srand(), size_t type
 #include <cstring>    // strcmp()
 #include <filesystem> // filesystem::path
@@ -9,12 +10,10 @@
 #include <unistd.h>   // getlogin()
 using namespace std;
 
-// Aliases
+// Declarations
 
 namespace fs = filesystem;
 typedef string str;
-
-// Variables
 
 int rand_int, num, diff, num_ans, num_range_min, num_range_max, attempts,
     attempts_taken;
@@ -22,21 +21,47 @@ bool prompt_for_name, arg_ignored, show_num = true;
 char rand_byte, ans;
 str diff_str, fname, ver = "numguesser++ v1.3";
 
-// Function declarations
-
 uint rng(uint min, uint max);
 int diff_choose();
 int rng_set();
 void rng_seed();
 void game();
 void file_ask();
+void interrupt(int signum);
 
-// Generate a random value between min and max
+// Generate a random value between min and max.
 uint rng(uint min, uint max) { return (rand() % ((max + 1) - min) + min); }
 
-// Handle any arguments that are passed to the program.
+// Print debug information and cleanly exit when a SIGINT is raised.
+void interrupt(int signum) {
+  cout << "SIGINT raised.\n\e[33;1;37mVARIABLE INFO:\e[0m\nrand_int "
+       << &rand_int << ' ' << sizeof(rand_int) << ' ' << rand_int << "\nnum "
+       << &num << ' ' << sizeof(num) << ' ' << num << "\ndiff " << &diff << ' '
+       << sizeof(diff) << ' ' << diff << "\nnum_ans " << &num_ans << ' '
+       << sizeof(num_ans) << ' ' << num_ans << "\nnum_range_min "
+       << &num_range_min << ' ' << sizeof(num_range_min) << ' ' << num_range_min
+       << "\nnum_range_max " << &num_range_max << ' ' << sizeof(num_range_max)
+       << ' ' << num_range_max << "\nattempts " << &attempts << ' '
+       << sizeof(attempts) << ' ' << attempts << "\nattempts_taken "
+       << &attempts_taken << ' ' << sizeof(attempts_taken) << ' '
+       << attempts_taken << "\nprompt_for_name " << &prompt_for_name << ' '
+       << sizeof(prompt_for_name) << ' ' << prompt_for_name << "\narg_ignored "
+       << &arg_ignored << ' ' << sizeof(arg_ignored) << ' ' << arg_ignored
+       << "\nshow_num " << &show_num << ' ' << sizeof(show_num) << ' '
+       << show_num << "\nrand_byte " << &rand_byte << ' ' << sizeof(rand_byte)
+       << ' ' << rand_byte << "\nans " << &ans << ' ' << sizeof(ans) << ' '
+       << ans << "\ndiff_str " << &diff_str << ' ' << sizeof(diff_str) << " \""
+       << diff_str << "\"\nfname " << &fname << ' ' << sizeof(fname) << " \""
+       << fname << "\"\nver " << &ver << ' ' << sizeof(ver) << " \"" << ver
+       << "\"\n";
+  exit(signum);
+}
+
+// Handle any arguments that are passed to the program and set up SIGINT
+// handling.
 int main(int argc, char *argv[]) {
   str ftxt;
+  signal(SIGINT, interrupt);
   if (argv[1]) {
     if ((!strcmp(argv[1], "-f") || !strcmp(argv[1], "--read-file")) &&
         argv[2]) {
@@ -100,32 +125,36 @@ int main(int argc, char *argv[]) {
       diff = 0;
     } else if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help") ||
                !strcmp(argv[1], "--usage")) {
-      cout << "Usage: numguesser++ [OPTION...] \n    or ng++ "
-              "[OPTION...]\n\nnumguesser++ is a C++ rewrite of numguesser, a "
-              "random number guessing game originally\nwritten in C, with some "
-              "additional enhancements.\n\n  -d 1-3\t\t     Chooses the "
-              "difficulty of the game, skipping the difficulty\n\t\t\t     "
-              "select phase. Accepts any value from 1-3 inclusive.\n\n  "
-              "-s\t\t\t     Prompts for a custom save name after a victory. If "
-              "this\n\t\t\t     option is not passed, the username of the user "
-              "who called\n\t\t\t     the program is used instead.\n\n  -f, "
-              "--read-file FILE\t     Reads from FILE and exits. FILE must "
-              "have the '.scf'\n\t\t\t     extension.\n\n  -n\t\t\t     "
-              "Prevents the program from displaying the correct number\n\t\t\t "
-              "    after a loss.\n\n  -h, --help, --usage\t     Displays this "
-              "help document and exits.\n\n  -v, --version\t\t     Displays "
-              "the program's version string and exits.\n\nMandatory or "
-              "optional arguments to long options are also mandatory or "
-              "optional for\nany corresponding short options.\n\nOnly one "
-              "argument can be passed to the program at a time. If multiple "
-              "arguments are\npassed, they will be ignored.\n\nReport bugs to "
-              "https://github.com/Xatra1/numguesser-plus-plus\n";
+      cout
+          << "Usage: numguesser++ [OPTION...] \n    or ng++ "
+             "[OPTION...]\n\nnumguesser++ is a C++ rewrite of numguesser, a "
+             "random number guessing game originally\nwritten in C, with some "
+             "additional enhancements.\n\n  -d 1-3\t\t     Chooses the "
+             "difficulty of the game, skipping the difficulty\n\t\t\t     "
+             "select phase. Accepts any value from 1-3 inclusive.\n\n  "
+             "-s\t\t\t     Prompts for a custom save name after a victory. If "
+             "this\n\t\t\t     option is not passed, the username of the user "
+             "who called\n\t\t\t     the program is used instead.\n\n  -f, "
+             "--read-file FILE\t     Reads from FILE and exits. FILE must have "
+             "the '.scf'\n\t\t\t     extension.\n\n  -n\t\t\t     Prevents the "
+             "program from displaying the correct number\n\t\t\t     after a "
+             "loss.\n\n      --debug\t\t     Displays debug information about "
+             "variables and exits.\n\n  -h, --help, --usage\t     Displays "
+             "this help document and exits.\n\n  -v, --version\t\t     "
+             "Displays the program's version string and exits.\n\nMandatory or "
+             "optional arguments to long options are also mandatory or "
+             "optional for\nany corresponding short options.\n\nOnly one "
+             "argument can be passed to the program at a time. If multiple "
+             "arguments are\npassed, they will be ignored.\n\nReport bugs to "
+             "https://github.com/Xatra1/numguesser-plus-plus\n";
       return 0;
     } else if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
       cout << ver << '\n';
       return 0;
     } else if (!strcmp(argv[1], "-n"))
       show_num = false;
+    else if (!strcmp(argv[1], "--debug"))
+      raise(SIGINT);
     else if (argv[1]) {
       cout << "\e[33;1;33mwarning:\e[0m Unknown argument '" << argv[1] << "'\n";
       arg_ignored = true;
@@ -153,7 +182,7 @@ void rng_seed() {
   srand(rand_int);
 }
 
-// Create difficulty prompt and set variables based on response
+// Create difficulty prompt and set variables based on response.
 int diff_choose() {
   if (!diff) {
     cout << "Choose a difficulty.\n(1) - Easy (10 attempts)\n(2) - Normal (5 "
@@ -178,9 +207,9 @@ int diff_choose() {
     exit(1);
     break;
   }
-  cout << "\n You selected \e[33;1;37m" << diff_str
+  cout << "\nYou selected \e[33;1;37m" << diff_str
        << ".\e[0m You will have \e[33;1;37m" << attempts
-       << " attempt(s)\e[0m to get the number correct.\nIs this correct? "
+       << " attempt(s)\e[0m to get the number correct.\n Is this correct? "
           "(y/n): ";
   cin >> ans;
   if (ans == 'n')
@@ -191,7 +220,7 @@ int diff_choose() {
   return rng_set();
 }
 
-// Prepare random values and finalize return value chain
+// Prepare random values and finalize return value chain.
 int rng_set() {
   num = rng(1, 100);
   num_range_min = num - rng(1, 10);
@@ -201,7 +230,7 @@ int rng_set() {
 }
 
 // Prompt for user answer and terminate game if user answer is equal to random
-// num. Otherwise, loop until user is correct or no attempts remain
+// num. Otherwise, loop until user is correct or no attempts remain.
 void game() {
   if (attempts > 0) {
     cout << "\nNumber is between " << num_range_min << " and " << num_range_max

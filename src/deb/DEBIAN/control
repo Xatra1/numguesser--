@@ -3,5 +3,5 @@ Version: 1.3
 Maintainer: Xatra1
 Architecture: all
 Description: A C++ rewrite of numguesser, a random number guessing game originally written in C, with some additional enhancements.
-Installed-Size: 50
+Installed-Size: 54
 
