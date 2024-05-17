@@ -1,17 +1,19 @@
-CC=g++
-DIR=src/deb/usr/local/bin/numguesser++
+BINARY_DIR=src/deb/usr/bin/numguesser++
+DEB_ALIAS=src/deb/usr/bin/ng++
 INSTALL_DIR=/usr/bin/numguesser++
-INSTALL_ALIAS_DIR=/usr/bin/ng++
+INSTALL_ALIAS=/usr/bin/ng++
+DEB_DIR=src/deb
+INPUT=src/numguesser++.cc
+CONTROL=src/deb/DEBIAN/control
 
-ng++: src/numguesser++.cc src/deb/DEBIAN/control
-	$(CC) -o $(DIR) src/numguesser++.cc
+ng++: $(INPUT) $(CONTROL)
+	c++ -o $(BINARY_DIR) $(INPUT)
 
-build-pkg: $(DIR)
-	@echo -e '\e[33;1;37mAutomatically removing package if detected...\e[0m'
-	if [ -f $(INSTALL_DIR) ] || [ -f $(INSTALL_ALIAS_DIR) ]; then yes | sudo apt-get remove numguesser++; fi
+build-pkg: $(BINARY_DIR)
+	sudo ln -sf $(INSTALL_DIR) $(DEB_ALIAS)
+	dpkg-deb --build $(DEB_DIR)
+	sudo dpkg -i $(DEB_DIR).deb
 
-	@echo -e '\e[33;1;37mBuilding Debian package...\e[0m'
-	dpkg-deb --build src/deb/
-
-	@echo -e '\e[33;1;37mInstalling newly built package...\e[0m'
-	sudo dpkg -i src/deb.deb
+install: $(BINARY_DIR)
+	sudo install $(BINAY_DIR) $(INSTALL_DIR)
+	sudo ln -sf $(INSTALL_DIR) $(INSTALL_ALIAS)

@@ -1,4 +1,0 @@
-#!/bin/sh
-# Prevent dpkg from trying to remove the entire /usr/bin directory
-sudo rm -f /usr/bin/numguesser++
-sudo rm -f /usr/bin/ng++

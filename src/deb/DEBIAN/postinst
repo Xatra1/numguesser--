@@ -1,8 +1,0 @@
-#!/bin/sh
-# If executable symlinks exist, remove and recreate. Otherwise, create normally.
-if [ -f /usr/bin/numguesser++ ] || [ -f /usr/bin/ng++ ]; then
-    sudo rm -f /usr/bin/numguesser++
-    sudo rm -f /usr/bin/ng++
-fi
-sudo ln -s /usr/local/bin/numguesser++ /usr/bin/numguesser++
-sudo ln -s /usr/local/bin/numguesser++ /usr/bin/ng++
