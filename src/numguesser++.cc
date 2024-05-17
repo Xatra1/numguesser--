@@ -3,7 +3,7 @@
 #include <filesystem> // filesystem::path
 #include <fstream>    // ifstream, ofstream
 #include <getopt.h>   // Provides argument parsing
-#include <iostream>   // cerr, cin, cout, endl, ios_base
+#include <iostream>   // cerr, cin, cout, ios_base
 #include <string>     // getline(), stoi(), str type
 #include <unistd.h>   // getlogin()
 
@@ -50,9 +50,8 @@ guessing game originally written in C, with some additional
 enhancements.
             
 -d, --difficulty 1-3    Chooses the difficulty of the game, 
-                        skipping the difficulty
-                        select phase. Accepts any value from 
-                        1-3 inclusive.
+                        skipping the difficulty select phase. 
+                        Accepts any value from 1-3 inclusive.
 
 -s                      Prompts for a custom save name after 
                         a victory. If this option is not 
@@ -76,13 +75,14 @@ mandatory or optional for any corresponding short options.
 
 Exit Codes:
 0 - Everything worked as expected.
-1 - Invalid difficulty value at selection prompt
-2 - Unable to seed RNG
-3 - Failed to open score file or score file does not have .scf extension
-4 - Invalid difficulty value (-d)
+1 - Invalid difficulty value at selection prompt.
+2 - Unable to seed RNG.
+3 - Failed to open score file or score file does not have 
+    .scf extension.
+4 - Invalid difficulty value passed to -d.
             
 Report bugs to https://github.com/Xatra1/numguesser-plus-plus)EOF"
-       << endl;
+       << '\n';
   exit(scode);
 }
 
@@ -92,8 +92,10 @@ int main(int argc, char *argv[]) {
   str ftxt;
   int index;
   signal(SIGINT, interrupt);
+
   for (;;) {
     switch (getopt_long(argc, argv, "d:sf:nhv", longopts, &index)) {
+
     case 'd': {
       str arg = optarg;
       size_t pos;
@@ -101,23 +103,25 @@ int main(int argc, char *argv[]) {
         diff = stoi(arg, &pos);
         if (diff < 1 || diff > 3) {
           cout << "\e[33;1;33mwarning:\e[0m Invalid difficulty value (expected "
-                  "1-3 inclusive).";
+                  "1-3 inclusive).\n";
           usage(4);
         }
       } catch (invalid_argument const &ex) {
-        cout << "\e[33;1;37mwarning:\e[0m Expected integer for difficulty "
-                "argument.";
+        cout << "\e[33;1;33mwarning:\e[0m Expected integer for difficulty "
+                "argument.\n";
         usage(4);
       } catch (out_of_range const &ex) {
-        cout << "\e[33;1;37mwarning:\e[0m Given integer for difficulty "
-                "argument surpasses integer limit.";
+        cout << "\e[33;1;33mwarning:\e[0m Given integer for difficulty "
+                "argument surpasses integer limit.\n";
         usage(4);
       }
     }
       continue;
+
     case 's':
       prompt_for_name = true;
       continue;
+
     case 'f': {
       fs::path extcheck = optarg;
       ifstream f(optarg);
@@ -135,21 +139,25 @@ int main(int argc, char *argv[]) {
         cout << ftxt << '\n';
       f.close();
       return 0;
-      break;
     }
+
     case 'n':
       show_num = false;
       continue;
+
     case 'h':
       usage(0);
       break;
+
     case 'v':
-      cout << ver << endl;
+      cout << ver << '\n';
       return 0;
       break;
+
     default:
       usage(1);
       break;
+
     case -1:
       break;
     }
