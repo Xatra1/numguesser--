@@ -15,5 +15,5 @@ build-pkg: $(BINARY_DIR)
 	sudo dpkg -i $(DEB_DIR).deb
 
 install: $(BINARY_DIR)
-	sudo install $(BINAY_DIR) $(INSTALL_DIR)
+	sudo install $(BINARY_DIR) $(INSTALL_DIR)
 	sudo ln -sf $(INSTALL_DIR) $(INSTALL_ALIAS)
