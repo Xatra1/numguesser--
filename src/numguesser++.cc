@@ -1,10 +1,9 @@
-#include <csignal>    // SIGINT, raise(), signal()
+#include <csignal>    // SIGINT, signal()
 #include <cstdlib>    // exit(), rand(), srand(), size_t type
-#include <cstring>    // strcmp()
 #include <filesystem> // filesystem::path
 #include <fstream>    // ifstream, ofstream
 #include <getopt.h>   // Provides argument parsing
-#include <iostream>   // cerr, cin, cout, ios_base
+#include <iostream>   // cerr, cin, cout, endl, ios_base
 #include <string>     // getline(), stoi(), str type
 #include <unistd.h>   // getlogin()
 
