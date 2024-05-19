@@ -1,18 +1,16 @@
 ## Building from Source
 ### Prerequisites
 - g++
-- make 
+- make
+- git 
 - dpkg*
   
 *Optional.
 ### Compiling
-#### Automatic
-If you have all required dependencies (including optional) you can execute ``mkng++.sh``. Any argument you pass to the shell script will be passed when the script runs the game. Note that the script assumes the source files are in your home directory.
+First, clone the GitHub repository:  
+``git clone https://github.com/Xatra1/numguesser-plus-plus``  
+You can also clone using SSH:  
+``git clone git@github.com:Xatra1/numguesser-plus-plus``  
   
-For example, if you wished to compile the game and open the game's help document, you can execute ``mkng++.sh -h``, ``mkng++.sh --help`` or ``mkng++.sh --usage``.
-#### Manual
-Open a terminal in the same directory as the makefile and run ``make ng++``. This will create an executable in ``src/deb/usr/local/bin/`` named ``numguesser++``
-   
-If your system has dpkg installed, you can then run ``make build-pkg`` to build and install a Debian package.
-  
-If your system does not have dpkg installed, or you do not wish to make a package, you can move the executable to ``/usr/bin`` to allow execution from anywhere.
+``cd`` into the newly cloned repo directory and execute ``mkng++.sh -h`` to read about the script's options.  
+mkng++'s options will modify the method used to compile the program, depending on the packages installed on your system.
