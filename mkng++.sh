@@ -61,7 +61,11 @@ fi
 make
 
 if [ $buildpkg = true ]; then
-    make build-pkg
+    if [ -f /usr/bin/dpkg ]; then
+        make build-pkg
+    else
+        echo -e "\e[33;1;31mfatal:\e[0m dpkg is not installed on your system. Try installing generically with 'mkng++.sh -g"
+    fi
 fi
 
 if [ $generic = true ]; then
