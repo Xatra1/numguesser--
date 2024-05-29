@@ -1,2 +1,3 @@
 deb.deb
 src/deb/usr/bin
+*.scf

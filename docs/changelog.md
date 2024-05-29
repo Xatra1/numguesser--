@@ -15,3 +15,11 @@
 - You can now run 'ng++' to execute the program instead of only 'numguesser++'
 - Implemented the '-n' argument from the original version of numguesser, which prevents the correct number from being displayed after a loss.
 - Implemented a '--debug' argument that displays debug information about program variables and terminates. The same information is also displayed when terminating the program with Ctrl-C
+
+## v1.4
+- The game can now accept multiple arguments at a time.
+- Removed the '--debug' argument (as well as the corresponding information)
+- Exit codes and their explanations are now included in the help document.
+- The game will no longer exit if an invalid parameter is passed to '-d'.
+- Added long options for '-n' and '-s'
+- Fixed a bug where the program would segfault if an unrecognized long option was passed.

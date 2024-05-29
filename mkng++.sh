@@ -54,22 +54,21 @@ if [ ! -f ./makefile ]; then
 fi
 
 if [ ! -f /src/deb/usr/bin/numguesser++ ]; then
-    mkdir src/deb/usr 2>/dev/null
-    mkdir src/deb/usr/bin 2>/dev/null
+    mkdir -vp src/deb/usr/bin
 fi
 
 make
 
 if [ $buildpkg = true ]; then
     if [ -f /usr/bin/dpkg ]; then
-        make build-pkg
+        make build-pkg || echo -e '\a\e[33;1;31mfatal:\e[0m Makefile error. See above.'
     else
         echo -e "\e[33;1;31mfatal:\e[0m dpkg is not installed on your system. Try installing generically with 'mkng++.sh -g'"
     fi
 fi
 
 if [ $generic = true ]; then
-    make install
+    make install || echo -e '\a\e[33;1;31mfatal:\e[0m Makefile error. See above.'
 fi
 
 if [ $buildpkg = false -a $generic = false ]; then
