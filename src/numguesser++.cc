@@ -5,12 +5,10 @@
 #include <getopt.h>   // Provides argument parsing
 #include <iostream>   // cerr, cin, cout, ios_base
 #include <string>     // getline(), stoi(), str type
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h> // getlogin()
+#include <unistd.h>   // getlogin()
 
 #define br '\n'
-#define log(msg) cout << __FILE__ << ":" << __LINE__ << ": " << msg << br;
+#define log(msg) cout << __FILE__ << ":" << __LINE__ << ":" << msg << br;
 
 namespace fs = std::filesystem;
 using namespace std;
@@ -96,7 +94,7 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, interrupt);
 
   for (;;) {
-    switch (getopt_long(argc, argv, "d:sf:nphv", longopts, &longopt_index)) {
+    switch (getopt_long(argc, argv, "d:sf:nhv", longopts, &longopt_index)) {
 
     case 'd': {
       str arg = optarg;
@@ -225,7 +223,7 @@ int diff_choose() {
     exit(0);
 
   default:
-    log("\a\n\e[33;1;31mE:\e[0m Invalid difficulty value.");
+    log("\a\e[33;1;31mE:\e[0m Invalid difficulty value.");
     exit(1);
   }
 
