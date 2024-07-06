@@ -46,9 +46,21 @@ Displays a usage document which lists options and what actions they perform, the
 .B \-v, --version
 .PP
 Prints the version string of the program, and terminates.
+.PP
+.SH EXIT STATUSES
+.PP
+0 - Everything worked as expected.
+.PP
+1 - Invalid difficulty value at selection prompt, or invalid value passed to -d.
+.PP
+2 - Unable to seed RNG, due to a missing /dev/urandom file.
+.PP
+3 - Failed to open score file, or score file does not have the proper .scf extension.
+.PP
+4 - Invalid argument passed to the program.
 .SH BUGS
 None known. Report bugs to <https://github.com/Xatra1/numguesser-plus-plus>
-.SH Author
+.SH AUTHOR
 Copyright (C) 2024 Xatra1
 .PP
 This program is licensed under the GNU General Public License v3. For more info, see /usr/share/licenses/numguesser++/LICENSE
