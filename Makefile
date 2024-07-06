@@ -28,7 +28,7 @@ build-pkg: $(BINARY_DIR)
 	cp src/numguesser++.1.gz $(DEB_DIR)/usr/share/man/man1
 	cp LICENSE $(DEB_DIR)/usr/share/licenses/numguesser++
 	@echo -e '\e[1;37mBuilding package...\e[0m'
-	@dpkg-deb --build $(DEB_DIR) && echo -e '\e[1;37mThe Debian package is now built! You can install it with "sudo apt-get install ./src/deb/deb.deb"\e[0m' || echo -e '\e[1;31mThe package failed to build. Exiting...'
+	@dpkg-deb --build $(DEB_DIR) && echo -e '\e[1;37mThe Debian package is now built! You can install it with "sudo apt-get install ./src/deb.deb"\e[0m' || echo -e '\e[1;31mThe package failed to build. Exiting...'
 
 install: $(BINARY_DIR)
 	sudo install $(BINARY_DIR) $(INSTALL_DIR)
