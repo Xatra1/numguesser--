@@ -23,3 +23,5 @@
 - The game will no longer exit if an invalid parameter is passed to '-d'.
 - Added long options for '-n' and '-s'
 - Fixed a bug where the program would segfault if an unrecognized long option was passed.
+- Implemented a manpage.
+- The game is now licensed under the GPL3.

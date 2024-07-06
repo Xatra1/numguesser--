@@ -1,0 +1,54 @@
+.\" Manpage for numguesser++
+.\" File an issue on Github <https://github.com/Xatra1/numguesser-plus-plus> if you find any typos, inconsistencies or grammatical mistakes
+.TH man 1 "7/5/2024" "1.4" "numguesser++"
+.SH NAME
+numguesser++ \- random number guessing game written in C++
+.SH DESCRIPTION
+numguesser++ (or ng++) is a C++ version of numguesser, designed to improve upon the original in any way it can. Whenever you start the program, you will see a difficulty select interface (unless the
+.B \-d
+argument is specified). The difference between each difficulty is the amount of attempts you will have to guess that correct number before the program terminates.
+.PP
+.B 1 (Easy)
+\- 10 attempts.
+.PP
+.B 2 (Normal)
+\- 5 attempts.
+.PP
+.B 3 (Hard)
+\- 1 attempt.
+.PP
+While the game is running, you will see a range of numbers that the correct number is in, and the amount of attempts you have remaining. If you guess correctly, a prompt will appear asking you to write information about your save (This includes the username of the person will launched the program, unless
+.B -s
+is specified, the amount of attempts you lost while finding the number, the amount of attempts you had left when the number was found, and the name of the difficulty you selected) to a file named 'scores.scf' in the current directory. If you guess incorrectly, the correct number will be shown (unless
+.B -n
+is specified) and the progrma will terminate.
+.SH OPTIONS
+.B \-d, --difficulty=VALUE
+.PP
+Skips the difficulty select interface that would appear when the program is normally started and uses VALUE for the difficulty. VALUE must be an integer that can range from 1-3 inclusive.
+.PP
+.B \-s, --prompt-name
+.PP
+Prompts the user for a custom name to write to their save, instead of defaulting to the username of the user that launched the program.
+.PP
+.B \-f, --read-file=FILE
+.PP
+If FILE ends in the .scf file extension, concatenates the contents of FILE to standard output, then terminates the program.
+.PP
+.B \-n, --no-num
+.PP
+Stops the program from displaying the correct number after a loss.
+.PP
+.B \-h, --help, --usage
+.PP
+Displays a usage document which lists options and what actions they perform, then terminates the program.
+.PP
+.B \-v, --version
+.PP
+Prints the version string of the program, and terminates.
+.SH BUGS
+None known. Report bugs to <https://github.com/Xatra1/numguesser-plus-plus>
+.SH Author
+Copyright (C) 2024 Xatra1
+.PP
+This program is licensed under the GNU General Public License v3. For more info, see /usr/share/licenses/numguesser++/LICENSE

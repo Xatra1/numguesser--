@@ -1,3 +1,5 @@
 deb.deb
-src/deb/usr/bin
+src/deb/usr/games
+src/deb/usr/share
 *.scf
+numguesser++.1.gz

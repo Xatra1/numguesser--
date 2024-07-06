@@ -1,3 +1,10 @@
+/**
+* Copyright (C) 2024 Xatra1
+* 
+* This project is licensed under the GNU General Public License v3
+* For more info, see LICENSE
+*/
+
 #include <csignal>    // SIGINT, signal()
 #include <cstdlib>    // exit(), rand(), srand(), size_t type
 #include <filesystem> // filesystem::path
