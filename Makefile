@@ -10,7 +10,7 @@ INSTALL_ALIAS=/usr/games/ng++
 DEB_DIR=src/deb
 
 # Source files
-INPUT=src/numguesser++.cc
+INPUT=src/main.cc
 CONTROL=src/deb/DEBIAN/control
 
 ng++: $(INPUT) $(CONTROL)
